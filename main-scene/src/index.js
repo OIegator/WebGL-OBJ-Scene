@@ -5,7 +5,7 @@ import {initMeshBuffers} from "./initMeshBuffers";
 import {drawCube} from "./drawCube.js";
 import {drawMesh} from "./drawMesh.js";
 import gold_texture from "../textures/gold_block.png"
-import {vec3} from "gl-matrix";
+import {vec3, quat} from "gl-matrix";
 
 const canvas = document.querySelector('canvas');
 const textLight = document.getElementById('light-overlay');
@@ -22,7 +22,7 @@ let controls = {
     headlight_x: 0.0,
     headlight_z: 0.0,
     object_position: vec3.fromValues(0.0, 0.0, -6.0),
-    headlight_direction: vec3.fromValues(-1.0, 0.0, 0.0),
+    headlight_direction: vec3.fromValues(0.0, 0.0, -1.0),
     object_direction: vec3.fromValues(0.0, 0.0, 16.0),
     movement_speed: 0.1,
     object_rotation: 0.0,
@@ -148,6 +148,8 @@ async function main() {
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
             drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "gold1", controls);
+            drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "gold2", controls);
+            drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "silver", controls);
             drawMesh(gl, programInfo, meshBuffers, goldTexture, null, colorBuffer, "gold1", controls);
             //drawCube(gl, programInfo, buffers, goldTexture, null, colorBuffer, "gold2", controls);
         }
@@ -339,14 +341,6 @@ function checkKeyPressed(e) {
         switch (controls.current_rotator) {
             case "gold":
                 controls.rotation_angle_gold -= 0.1;
-                const angle = controls.rotation_angle_gold * 0.5
-                const cosAngle = Math.cos(angle);
-                const sinAngle = Math.sin(angle);
-                controls.headlight_direction = vec3.fromValues(
-                    controls.headlight_direction[0] * cosAngle - controls.headlight_direction[2] * sinAngle,
-                    controls.headlight_direction[1],
-                    controls.headlight_direction[0] * sinAngle + controls.headlight_direction[2] * cosAngle
-                );
                 break;
             case "silver":
                 controls.rotation_angle_silver -= 0.1;

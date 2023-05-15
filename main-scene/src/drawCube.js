@@ -2,7 +2,7 @@ import {mat4, vec3} from "gl-matrix";
 
 function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cube_type, controls) {
 
-    const fieldOfView = (45 * Math.PI) / 180; // in radians
+    const fieldOfView = (60 * Math.PI) / 180; // in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
@@ -14,25 +14,25 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
 
     switch (cube_type) {
         case "gold1":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [-3.5, 0.0, -6.0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-4, 0.0, -6.0]);
             // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
             // mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
             // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
             break;
         case "gold2":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
+            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
+            // mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
+            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
             break;
         case "silver":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            // Translate the cube to the center of rotation
-            mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
-
-            // Rotate the cube around its center
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [7, 0.0, -6.0]);
+            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
+            // // Translate the cube to the center of rotation
+            // mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
+            //
+            // // Rotate the cube around its center
+            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
 
             // Translate the cube back to its original position
             mat4.translate(modelViewMatrix, modelViewMatrix, [-3.0, 0.0, 0.0]);

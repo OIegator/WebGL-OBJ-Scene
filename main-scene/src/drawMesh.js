@@ -2,7 +2,7 @@ import {mat4, vec3} from "gl-matrix";
 
 function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cube_type, controls) {
 
-    const fieldOfView = (45 * Math.PI) / 180; // in radians
+    const fieldOfView = (60 * Math.PI) / 180; // in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
