@@ -2428,6 +2428,7 @@ const cube = "# Blender v2.72 (sub 0) OBJ File: ''\n" +
     "f 320//945 322//945 390//945\n" +
     "f 505//946 323//946 391//946\n"
 
+
 let mesh = new OBJ.Mesh(cube);
 
 function initMeshBuffers(gl) {
