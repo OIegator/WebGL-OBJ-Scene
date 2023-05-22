@@ -3,13 +3,18 @@
 precision highp float;
 #endif
 
-in highp vec3 vLightDirection;
+in highp vec3 vLightDir;
 in vec3 vNormal;
 in vec4 vColor;
 in vec3 vPosition;
+in vec3 vCameraPosition;
 in highp vec2 vTextureCoord;
 
-uniform sampler2D uSampler;
+uniform vec3 uSpotlightPosition;
+uniform vec3 uSpotlightDirection;
+uniform float uSpotlightCutoff;
+uniform float uSpotlightOuterCutoff;
+
 uniform vec3 uLightPosition;
 uniform float uAttenuationLinear;
 uniform float uAttenuationQuadratic;
@@ -17,11 +22,6 @@ uniform float uAmbientIntensity;
 uniform vec3 uAmbientLightColor;
 uniform vec3 uDiffuseLightColor;
 uniform vec3 uSpecularLightColor;
-uniform vec3 uHeadlightLeftPosition;
-uniform vec3 uHeadlightLeftDirection;
-uniform float uSpotlightCutoff;
-uniform float uSpotlightExponent;
-
 out vec4 fragColor;
 
 uniform sampler2D uSampler1;
@@ -39,10 +39,39 @@ void main() {
     float diffuseLightDot = max(dot(vNormal, lightDirection), 0.0);
 
     vec3 reflectionVector = normalize(reflect(-lightDirection, vNormal));
+    vec3 V = normalize(vCameraPosition - vPosition);
+    vec3 halfwayDir = normalize(reflectionVector + V);
 
-    vec3 viewVectorEye = -normalize(vPosition);
+    vec3 spotlightDirection = normalize(uSpotlightPosition - vPosition);
+    float spotlightDot = dot(spotlightDirection, normalize(-uSpotlightDirection));
+    float spotlightFactor = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, spotlightDot);
 
-    float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
+    float diffuseLightDot2 = max(dot(vNormal, spotlightDirection), 0.0);
+    vec3 reflectionVector2 = normalize(reflect(-spotlightDirection, vNormal));
+    vec3 halfwayDir2 = normalize(reflectionVector2 + V);
+    float specularLightDot2 = max(dot(reflectionVector2, halfwayDir2), 0.0);
+    float specularLightParam2 = pow(specularLightDot2, shininess);
+
+    //-------------------------------------
+    vec3 streetLightDirection = normalize(vec3(20.0, 4.0, -36.0) - vPosition);
+    float streetLightDot = dot(streetLightDirection, normalize(-vec3(0.0, -1.0, 0.0)));
+    float streetLightFactor = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, streetLightDot);
+    float diffuseLightDot3 = max(dot(vNormal, streetLightDirection), 0.0);
+    vec3 reflectionVector3 = normalize(reflect(-streetLightDirection, vNormal));
+    vec3 halfwayDir3 = normalize(reflectionVector3 + V);
+    float specularLightDot3 = max(dot(reflectionVector3, halfwayDir3), 0.0);
+    float specularLightParam3 = pow(specularLightDot3, shininess);
+    //-------------------------------------
+    vec3 streetLightDirection2 = normalize(vec3(-20.0, 4.0, -36.0) - vPosition);
+    float streetLightDot2 = dot(streetLightDirection2, normalize(-vec3(0.0, -1.0, 0.0)));
+    float streetLightFactor2 = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, streetLightDot2);
+    float diffuseLightDot4 = max(dot(vNormal, streetLightDirection2), 0.0);
+    vec3 reflectionVector4 = normalize(reflect(-streetLightDirection2, vNormal));
+    vec3 halfwayDir4 = normalize(reflectionVector4 + V);
+    float specularLightDot4 = max(dot(reflectionVector4, halfwayDir4), 0.0);
+    float specularLightParam4 = pow(specularLightDot4, shininess);
+    //-------------------------------------
+    float specularLightDot = max(dot(reflectionVector, halfwayDir), 0.0);
     float specularLightParam = pow(specularLightDot, shininess);
 
     float attenuation = 1.0 / (1.0 + uAttenuationLinear * length(lightDirection) +
@@ -50,23 +79,15 @@ void main() {
 
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
     (uDiffuseLightColor * diffuseLightDot +
-    uSpecularLightColor * specularLightParam) * attenuation;
+    uSpecularLightColor * specularLightParam) * attenuation +
+    (uDiffuseLightColor * diffuseLightDot2 +
+    uSpecularLightColor * specularLightParam2) * attenuation * spotlightFactor +
+    (uDiffuseLightColor * 0.1 * diffuseLightDot3 +
+    uSpecularLightColor * specularLightParam3 * 1.0) * attenuation * streetLightFactor +
+    (uDiffuseLightColor * 0.1 * diffuseLightDot4 +
+    uSpecularLightColor * specularLightParam4 * 1.0) * attenuation * streetLightFactor2;
 
-    // Вычисление фактора затухания прожектора
-    vec3 spotlightDirection = normalize(uHeadlightLeftPosition - vPosition);
-    float spotlightFactor = dot(spotlightDirection, normalize(-uHeadlightLeftDirection));
 
-    // Проверка, попадает ли пиксель в угол охвата прожектора
-    if (spotlightFactor > uSpotlightCutoff) {
-        // Вычисление экспоненты затухания прожектора
-        float spotlightExponent = pow(spotlightFactor, uSpotlightExponent);
-        // Умножение цвета пикселя на фактор затухания прожектора
-        vLightWeighting *= spotlightExponent;
-    } else {
-        // Пиксель не попадает в угол охвата прожектора, применяем затухание
-        vLightWeighting *= 0.3;
-    }
-
-    fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+    fragColor = (tColor1 + vColor * 0.5) * vec4(vLightWeighting, 1);
 
 }

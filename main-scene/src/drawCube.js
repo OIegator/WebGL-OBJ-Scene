@@ -1,4 +1,4 @@
-import {mat4, vec3} from "gl-matrix";
+import {mat4} from "gl-matrix";
 
 function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cube_type, controls) {
 
@@ -13,44 +13,24 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     const modelViewMatrix = mat4.create();
 
     switch (cube_type) {
-        case "gold1":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [-4, 0.0, -6.0]);
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            // mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+        case "grass1":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, -10.0, -12.0]);
             break;
-        case "gold2":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            // mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+        case "grass2":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -10.0, -22.0]);
+
             break;
-        case "silver":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [7, 0.0, -6.0]);
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            // // Translate the cube to the center of rotation
-            // mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
-            //
-            // // Rotate the cube around its center
-            // mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
-
-            // Translate the cube back to its original position
-            mat4.translate(modelViewMatrix, modelViewMatrix, [-3.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_silver, [0, 1, 0]);
+        case "grass3":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [12.0, -10.0, -22.0]);
             break;
-        case "bronze":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-
-            // Translate the cube to the center of rotation
-            mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
-
-            // Rotate the cube around its center
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
-
-            // Translate the cube back to its original position
-            mat4.translate(modelViewMatrix, modelViewMatrix, [3.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_bronze, [0, 1, 0]);
+        case "grass4":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [12.0, -10.0, -10]);
+            break;
+        case "grass5":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-12.0, -10.0, -22]);
+            break;
+        case "grass6":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-11.0, -10.0, -10]);
             break;
     }
 
@@ -62,7 +42,7 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     // buffer into the vertexPosition attribute.
     setPositionAttribute(gl, buffers, programInfo);
 
-    //setTextureAttribute(gl, buffers, programInfo);
+    setTextureAttribute(gl, buffers, programInfo);
 
     //setColorAttribute(gl, colorBuffer, programInfo);
 
@@ -113,27 +93,24 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     );
 
     gl.uniform3fv(
-        programInfo.uniformLocations.headlightLeftPosition,
+        programInfo.uniformLocations.spotlightPosition,
         controls.object_position
     );
 
     gl.uniform3fv(
-        programInfo.uniformLocations.headlightLeftDirection,
+        programInfo.uniformLocations.spotlightDirection,
         controls.headlight_direction
     );
 
-    console.log(controls.headlight_direction)
-
     gl.uniform1f(
         programInfo.uniformLocations.spotlightCutoff,
-        Math.cos(Math.PI / 6)
+        Math.cos(Math.PI / 4)
     );
 
     gl.uniform1f(
-        programInfo.uniformLocations.spotlightExponent,
-        0.2
+        programInfo.uniformLocations.spotlightOuterCutoff,
+        Math.cos(Math.PI / 2)
     );
-
 
     gl.uniform3fv(
         programInfo.uniformLocations.ambientLightColor,

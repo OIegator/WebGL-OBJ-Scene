@@ -40,7 +40,7 @@ function initPositionBuffer(gl) {
         // Left face
         -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
     ];
-    positions = positions.map(value => value * 2);
+    positions = positions.map(value => value * 6);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     return positionBuffer;
@@ -158,7 +158,6 @@ function initTextureBuffer(gl) {
 
     return textureCoordBuffer;
 }
-
 
 function initNormalBuffer(gl) {
     const normalBuffer = gl.createBuffer();

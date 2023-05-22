@@ -4,26 +4,23 @@ import {initCubeBuffers, initColorBuffer} from "./initCubeBuffers";
 import {initMeshBuffers} from "./initMeshBuffers";
 import {drawCube} from "./drawCube.js";
 import {drawMesh} from "./drawMesh.js";
+import grass_texture from "../textures/grass.jpg"
 import gold_texture from "../textures/gold_block.png"
-import {vec3, quat} from "gl-matrix";
+import {vec3} from "gl-matrix";
 
 const canvas = document.querySelector('canvas');
 const textLight = document.getElementById('light-overlay');
 const textShade = document.getElementById('shade-overlay');
 const verticalCtrl = document.getElementById('vertical-controller-overlay');
-const horizontalCtrl = document.getElementById('horizontal-controller-overlay');
 let gl;
 
 let controls = {
     pedestal_center: [],
     current_rotator: "gold",
     current_controller: "ambient",
-    rotation_angle_gold: Math.PI * -0.5,
-    headlight_x: 0.0,
-    headlight_z: 0.0,
-    object_position: vec3.fromValues(0.0, 0.0, -6.0),
-    headlight_direction: vec3.fromValues(0.0, 0.0, -1.0),
-    object_direction: vec3.fromValues(0.0, 0.0, 16.0),
+    rotation_angle_gold: Math.PI,
+    object_position: vec3.fromValues(0.0, -2.0, -6.0),
+    headlight_direction: [0.0, 0.0, -1.0],
     movement_speed: 0.1,
     object_rotation: 0.0,
     rotation_angle_silver: 0.0,
@@ -32,7 +29,7 @@ let controls = {
     rotation_angle_pedestal_2scene: 0.0,
     attenuation_linear: 0.0,
     attenuation_quadratic: 0.0,
-    ambient_intensity: 5.0,
+    ambient_intensity: -3.8,
     current_vs: LambertVS,
     current_fs: PhongFS,
     fs_list: [PhongFS],
@@ -75,6 +72,7 @@ async function main() {
     const cubeBuffers = initCubeBuffers(gl);
     const meshBuffers = initMeshBuffers(gl);
 
+    const grassTexture = loadTexture(gl, grass_texture);
     const goldTexture = loadTexture(gl, gold_texture);
     // const silverTexture = loadTexture(gl, iron_texture);
     // const bronzeTexture = loadTexture(gl, copper_texture);
@@ -114,12 +112,14 @@ async function main() {
                     gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
                 lightPosition:
                     gl.getUniformLocation(shaderProgram, "uLightPosition"),
-                headlightLeftPosition:
-                    gl.getUniformLocation(shaderProgram, "uHeadlightLeftPosition"),
-                headlightLeftDirection:
-                    gl.getUniformLocation(shaderProgram, "uHeadlightLeftDirection"),
+                spotlightPosition:
+                    gl.getUniformLocation(shaderProgram, "uSpotlightPosition"),
+                spotlightDirection:
+                    gl.getUniformLocation(shaderProgram, "uSpotlightDirection"),
                 spotlightCutoff:
                     gl.getUniformLocation(shaderProgram, "uSpotlightCutoff"),
+                spotlightOuterCutoff:
+                    gl.getUniformLocation(shaderProgram, "uSpotlightOuterCutoff"),
                 spotlightExponent:
                     gl.getUniformLocation(shaderProgram, "uSpotlightExponent "),
                 ambientLightColor:
@@ -147,11 +147,13 @@ async function main() {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
-            drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "gold1", controls);
-            drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "gold2", controls);
-            drawCube(gl, programInfo, cubeBuffers, goldTexture, null, colorBuffer, "silver", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass1", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass2", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass3", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass4", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass5", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass6", controls);
             drawMesh(gl, programInfo, meshBuffers, goldTexture, null, colorBuffer, "gold1", controls);
-            //drawCube(gl, programInfo, buffers, goldTexture, null, colorBuffer, "gold2", controls);
         }
         requestAnimationFrame(render);
     }
@@ -294,7 +296,6 @@ function checkKeyPressed(e) {
 
 
     if (e.key === "w") {
-        controls.headlight_z -= 1.0;
         const frontVector = vec3.fromValues(
             -Math.sin(controls.rotation_angle_gold),
             0.0,
@@ -305,29 +306,26 @@ function checkKeyPressed(e) {
     }
 
     if (e.key === "s") {
-        controls.headlight_z += 1.;
         const backVector = vec3.fromValues(
             Math.sin(controls.rotation_angle_gold),
             0.0,
             Math.cos(controls.rotation_angle_gold)
         );
         vec3.scaleAndAdd(controls.object_position, controls.object_position, backVector, -controls.movement_speed);
-        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, backVector, -controls.movement_speed);
+       vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, backVector, -controls.movement_speed);
     }
 
     if (e.key === "a") {
-        controls.headlight_x -= 1.0;
         const leftVector = vec3.fromValues(
             -Math.cos(controls.rotation_angle_gold),
             0.0,
             Math.sin(controls.rotation_angle_gold)
         );
         vec3.scaleAndAdd(controls.object_position, controls.object_position, leftVector, -controls.movement_speed);
-        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, leftVector, -controls.movement_speed);
+       vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, leftVector, -controls.movement_speed);
     }
 
     if (e.key === "d") {
-        controls.headlight_x += 1.0;
         const rightVector = vec3.fromValues(
             Math.cos(controls.rotation_angle_gold),
             0.0,
@@ -340,7 +338,8 @@ function checkKeyPressed(e) {
     if (e.key === "ArrowLeft") {
         switch (controls.current_rotator) {
             case "gold":
-                controls.rotation_angle_gold -= 0.1;
+                controls.rotation_angle_gold += 0.1;
+                controls.headlight_direction[0] -= 1;
                 break;
             case "silver":
                 controls.rotation_angle_silver -= 0.1;
@@ -360,8 +359,8 @@ function checkKeyPressed(e) {
     if (e.key === "ArrowRight") {
         switch (controls.current_rotator) {
             case "gold":
-                controls.rotation_angle_gold += 0.1;
-
+                controls.rotation_angle_gold -= 0.1;
+                controls.headlight_direction[0] += 1;
                 break;
             case "silver":
                 controls.rotation_angle_silver += 0.1;

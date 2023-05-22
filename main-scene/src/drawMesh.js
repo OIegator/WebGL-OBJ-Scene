@@ -1,4 +1,4 @@
-import {mat4, vec3} from "gl-matrix";
+import {mat4} from "gl-matrix";
 
 function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cube_type, controls) {
 
@@ -114,12 +114,12 @@ function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     const light_position = controls.object_position
 
     gl.uniform3fv(
-        programInfo.uniformLocations.headlightLeftPosition,
+        programInfo.uniformLocations.spotlightPosition,
         [controls.headlight_x, 0.0, controls.headlight_z]
     );
 
     gl.uniform3fv(
-        programInfo.uniformLocations.headlightLeftDirection,
+        programInfo.uniformLocations.spotlightDirection,
         [10.0, 0, -0.0]
     );
 
@@ -207,7 +207,7 @@ function setColorAttribute(gl, colorBuffer, programInfo) {
 }
 
 function setTextureAttribute(gl, buffers, programInfo) {
-    const num = buffers.mesh.textureBuffer.itemSize;; // every coordinate composed of 2 values
+    const num = buffers.mesh.textureBuffer.itemSize; // every coordinate composed of 2 values
     const type = gl.FLOAT; // the data in the buffer is 32-bit float
     const normalize = false; // don't normalize
     const stride = 0; // how many bytes to get from one set to the next
