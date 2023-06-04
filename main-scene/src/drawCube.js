@@ -18,7 +18,6 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
             break;
         case "grass2":
             mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -10.0, -22.0]);
-
             break;
         case "grass3":
             mat4.translate(modelViewMatrix, modelViewMatrix, [12.0, -10.0, -22.0]);
@@ -31,6 +30,12 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
             break;
         case "grass6":
             mat4.translate(modelViewMatrix, modelViewMatrix, [-11.0, -10.0, -10]);
+            break;
+        case "grass7":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-21.0, -10.0, -22]);
+            break;
+        case "grass8":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [21.0, -10.0, -22]);
             break;
     }
 

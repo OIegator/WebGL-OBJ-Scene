@@ -70,7 +70,7 @@ async function main() {
     }
 
     const cubeBuffers = initCubeBuffers(gl);
-    const meshBuffers = initMeshBuffers(gl);
+    const meshBuffers = await initMeshBuffers(gl);
 
     const grassTexture = loadTexture(gl, grass_texture);
     const goldTexture = loadTexture(gl, gold_texture);
@@ -153,6 +153,8 @@ async function main() {
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass4", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass5", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass6", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass7", controls);
+            drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass8", controls);
             drawMesh(gl, programInfo, meshBuffers, grassTexture, null, colorBuffer, "gold1", controls);
         }
         requestAnimationFrame(render);
