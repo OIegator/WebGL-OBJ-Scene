@@ -20,7 +20,7 @@ let controls = {
     current_controller: "ambient",
     rotation_angle_gold: Math.PI,
     object_position: vec3.fromValues(0.0, -2.0, -6.0),
-    headlight_direction: [0.0, 0.0, -1.0],
+    headlight_direction: [0.0, -1.0, 0.0],
     movement_speed: 0.1,
     object_rotation: 0.0,
     rotation_angle_silver: 0.0,
@@ -153,7 +153,7 @@ async function main() {
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass4", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass5", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass6", controls);
-            drawMesh(gl, programInfo, meshBuffers, goldTexture, null, colorBuffer, "gold1", controls);
+            drawMesh(gl, programInfo, meshBuffers, grassTexture, null, colorBuffer, "gold1", controls);
         }
         requestAnimationFrame(render);
     }

@@ -113,14 +113,25 @@ function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     );
     const light_position = controls.object_position
 
+    gl.uniform1f(
+        programInfo.uniformLocations.spotlightCutoff,
+        Math.cos(20*Math.PI / 180)
+    );
+
+    gl.uniform1f(
+        programInfo.uniformLocations.spotlightOuterCutoff,
+        Math.cos(60*Math.PI / 180)
+    );
+
+
     gl.uniform3fv(
         programInfo.uniformLocations.spotlightPosition,
-        [controls.headlight_x, 0.0, controls.headlight_z]
+        controls.object_position
     );
 
     gl.uniform3fv(
         programInfo.uniformLocations.spotlightDirection,
-        [10.0, 0, -0.0]
+        controls.headlight_direction
     );
 
 

@@ -104,12 +104,12 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
 
     gl.uniform1f(
         programInfo.uniformLocations.spotlightCutoff,
-        Math.cos(Math.PI / 4)
+        Math.cos(20*Math.PI / 180)
     );
 
     gl.uniform1f(
         programInfo.uniformLocations.spotlightOuterCutoff,
-        Math.cos(Math.PI / 2)
+        Math.cos(60*Math.PI / 180)
     );
 
     gl.uniform3fv(
@@ -128,23 +128,23 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
         [1.0, 1.0, 1.0]
     );
 
-    gl.activeTexture(gl.TEXTURE0);
-
-    // Bind the texture to texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, texture1);
-
-    // Tell the shader we bound the texture to texture unit 0
-    gl.uniform1i(programInfo.uniformLocations.uSampler1, 0);
-
-    if (texture2 != null) {
-        gl.activeTexture(gl.TEXTURE1);
-
-        // Bind the texture to texture unit 1
-        gl.bindTexture(gl.TEXTURE_2D, texture2);
-
-        // Tell the shader we bound the texture to texture unit 1
-        gl.uniform1i(programInfo.uniformLocations.uSampler2, 1);
-    }
+    // gl.activeTexture(gl.TEXTURE0);
+    //
+    // // Bind the texture to texture unit 0
+    // gl.bindTexture(gl.TEXTURE_2D, texture1);
+    //
+    // // Tell the shader we bound the texture to texture unit 0
+    // gl.uniform1i(programInfo.uniformLocations.uSampler1, 0);
+    //
+    // if (texture2 != null) {
+    //     gl.activeTexture(gl.TEXTURE1);
+    //
+    //     // Bind the texture to texture unit 1
+    //     gl.bindTexture(gl.TEXTURE_2D, texture2);
+    //
+    //     // Tell the shader we bound the texture to texture unit 1
+    //     gl.uniform1i(programInfo.uniformLocations.uSampler2, 1);
+    // }
 
     {
         const vertexCount = 36;

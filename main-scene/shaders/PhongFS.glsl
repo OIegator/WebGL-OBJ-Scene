@@ -43,7 +43,7 @@ void main() {
     vec3 halfwayDir = normalize(reflectionVector + V);
 
     vec3 spotlightDirection = normalize(uSpotlightPosition - vPosition);
-    float spotlightDot = dot(spotlightDirection, normalize(-uSpotlightDirection));
+    float spotlightDot = dot(spotlightDirection, normalize(-vec3(0.0, -1.0, -1.0)));
     float spotlightFactor = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, spotlightDot);
 
     float diffuseLightDot2 = max(dot(vNormal, spotlightDirection), 0.0);
@@ -53,7 +53,7 @@ void main() {
     float specularLightParam2 = pow(specularLightDot2, shininess);
 
     //-------------------------------------
-    vec3 streetLightDirection = normalize(vec3(20.0, 4.0, -36.0) - vPosition);
+    vec3 streetLightDirection = normalize(vec3(12.0, 4.0, -22.0) - vPosition);
     float streetLightDot = dot(streetLightDirection, normalize(-vec3(0.0, -1.0, 0.0)));
     float streetLightFactor = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, streetLightDot);
     float diffuseLightDot3 = max(dot(vNormal, streetLightDirection), 0.0);
@@ -62,7 +62,7 @@ void main() {
     float specularLightDot3 = max(dot(reflectionVector3, halfwayDir3), 0.0);
     float specularLightParam3 = pow(specularLightDot3, shininess);
     //-------------------------------------
-    vec3 streetLightDirection2 = normalize(vec3(-20.0, 4.0, -36.0) - vPosition);
+    vec3 streetLightDirection2 = normalize(vec3(-12.0, 4.0, -22.0) - vPosition);
     float streetLightDot2 = dot(streetLightDirection2, normalize(-vec3(0.0, -1.0, 0.0)));
     float streetLightFactor2 = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, streetLightDot2);
     float diffuseLightDot4 = max(dot(vNormal, streetLightDirection2), 0.0);
@@ -78,13 +78,11 @@ void main() {
     uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-    (uDiffuseLightColor * diffuseLightDot +
-    uSpecularLightColor * specularLightParam) * attenuation +
     (uDiffuseLightColor * diffuseLightDot2 +
     uSpecularLightColor * specularLightParam2) * attenuation * spotlightFactor +
-    (uDiffuseLightColor * 0.1 * diffuseLightDot3 +
+    (uDiffuseLightColor * diffuseLightDot3 +
     uSpecularLightColor * specularLightParam3 * 1.0) * attenuation * streetLightFactor +
-    (uDiffuseLightColor * 0.1 * diffuseLightDot4 +
+    (uDiffuseLightColor * diffuseLightDot4 +
     uSpecularLightColor * specularLightParam4 * 1.0) * attenuation * streetLightFactor2;
 
 
