@@ -21,26 +21,22 @@ function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
             mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
             break;
         case "cow1":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [-10.0, -4.0, -20.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, -0.7, [0, 1, 0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, controls.position_cow1);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_cow1[1], [0, 1, 0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_cow1[0], [1, 0, 0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_cow1[2], [0, 0, 1]);
             break;
         case "cow2":
             mat4.translate(modelViewMatrix, modelViewMatrix, [10.0, -4.0, -20.0]);
             mat4.rotate(modelViewMatrix, modelViewMatrix, -2.6, [0, 1, 0]);
             break;
-        case "bronze":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-
-            // Translate the cube to the center of rotation
-            mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
-
-            // Rotate the cube around its center
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
-
-            // Translate the cube back to its original position
-            mat4.translate(modelViewMatrix, modelViewMatrix, [3.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_bronze, [0, 1, 0]);
+        case "street_light1":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-15.0, -4.0, -25.0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, -0.8, [0, 1, 0]);
+            break;
+        case "street_light2":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [15.0, -4.0, -25.0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, -2.3, [0, 1, 0]);
             break;
     }
 
@@ -101,11 +97,20 @@ function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
         programInfo.uniformLocations.lightPosition,
         lightPositionValue
     );
-    const light_position = controls.object_position
 
     gl.uniform1f(
         programInfo.uniformLocations.spotlightCutoff,
         Math.cos(20*Math.PI / 180)
+    );
+
+    gl.uniform1f(
+        programInfo.uniformLocations.spotlightIntensity,
+        controls.spotlight_intensity
+    );
+
+    gl.uniform1f(
+        programInfo.uniformLocations.streetlightIntensity,
+        controls.streetlight_intensity
     );
 
     gl.uniform1f(

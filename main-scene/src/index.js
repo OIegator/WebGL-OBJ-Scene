@@ -7,31 +7,35 @@ import {drawMesh} from "./drawMesh.js";
 import ufo_texture from "../textures/ufo_diffuse.png"
 import cow_texture from "../textures/cow.png"
 import grass_texture from "../textures/grass.jpg"
-import gold_texture from "../textures/gold_block.png"
 import {vec3} from "gl-matrix";
 
 const canvas = document.querySelector('canvas');
 const textLight = document.getElementById('light-overlay');
 const textShade = document.getElementById('shade-overlay');
-const verticalCtrl = document.getElementById('vertical-controller-overlay');
 let gl;
 
 let controls = {
     pedestal_center: [],
-    current_rotator: "gold",
+    current_rotator: "cow1_y",
     current_controller: "ambient",
     rotation_angle_gold: Math.PI,
     object_position: [0.0, 0.0, -16.0],
     headlight_direction: [0.0, -1.0, 0.0],
     movement_speed: 0.5,
     object_rotation: 0.0,
-    rotation_angle_silver: 0.0,
+    position_cow1: [-10.0, -4.0, -20.0],
+    rotation_cow1: [0.0, -0.7, 0.0],
+    current_frame_cow1: 0,
     rotation_angle_bronze: 0.0,
     rotation_angle_pedestal_2itself: 0.0,
     rotation_angle_pedestal_2scene: 0.0,
     attenuation_linear: 0.0,
     attenuation_quadratic: 0.0,
     ambient_intensity: 2,
+    spotlight_intensity: 1.0,
+    spotlight_switch: 1,
+    streetlight_switch: 1,
+    streetlight_intensity: 1.0,
     current_vs: LambertVS,
     current_fs: PhongFS,
     fs_list: [PhongFS],
@@ -74,16 +78,13 @@ async function main() {
     const cubeBuffers = initCubeBuffers(gl);
     const ufoBuffers = await initMeshBuffers(gl, "ufo");
     const cowBuffers = await initMeshBuffers(gl, "cow");
+    const streetLightBuffers = await initMeshBuffers(gl, "street_light");
+    const streetLightPoleBuffers = await initMeshBuffers(gl, "street_light_pole");
 
     const grassTexture = loadTexture(gl, grass_texture);
-    const goldTexture = loadTexture(gl, gold_texture);
     const ufoTexture = loadTexture(gl, ufo_texture);
     const cowTexture = loadTexture(gl, cow_texture);
-    // const silverTexture = loadTexture(gl, iron_texture);
-    // const bronzeTexture = loadTexture(gl, copper_texture);
-    // const digit1Texture = loadTexture(gl, digit1_texture);
-    // const digit2Texture = loadTexture(gl, digit2_texture);
-    // const digit3Texture = loadTexture(gl, digit3_texture);
+
 
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.enable(gl.BLEND);
@@ -125,6 +126,10 @@ async function main() {
                     gl.getUniformLocation(shaderProgram, "uSpotlightCutoff"),
                 spotlightOuterCutoff:
                     gl.getUniformLocation(shaderProgram, "uSpotlightOuterCutoff"),
+                spotlightIntensity:
+                    gl.getUniformLocation(shaderProgram, "uSpotlightIntensity"),
+                streetlightIntensity:
+                    gl.getUniformLocation(shaderProgram, "uStreetlightIntensity"),
                 spotlightExponent:
                     gl.getUniformLocation(shaderProgram, "uSpotlightExponent "),
                 ambientLightColor:
@@ -149,6 +154,7 @@ async function main() {
 
 
         if (shaderProgram) {
+            checkObjectPosition();
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
@@ -163,6 +169,10 @@ async function main() {
             drawMesh(gl, programInfo, ufoBuffers, ufoTexture, null, colorBuffer, "gold1", controls);
             drawMesh(gl, programInfo, cowBuffers, cowTexture, null, colorBuffer, "cow1", controls);
             drawMesh(gl, programInfo, cowBuffers, cowTexture, null, colorBuffer, "cow2", controls);
+            drawMesh(gl, programInfo, streetLightBuffers, ufoTexture, null, colorBuffer, "street_light1", controls);
+            drawMesh(gl, programInfo, streetLightPoleBuffers, ufoTexture, null, colorBuffer, "street_light1", controls);
+            drawMesh(gl, programInfo, streetLightBuffers, ufoTexture, null, colorBuffer, "street_light2", controls);
+            drawMesh(gl, programInfo, streetLightPoleBuffers, ufoTexture, null, colorBuffer, "street_light2", controls);
         }
         requestAnimationFrame(render);
     }
@@ -281,19 +291,53 @@ function checkKeyPressed(e) {
         textLight.innerText = "Light Model: " + shader2string(controls.vs_list[controls.vs_ind % controls.vs_list.length]);
     }
     if (e.key === "1") {
-        controls.current_controller = "lin";
-        verticalCtrl.innerText = "Adjustment Controller: Linear attenuation"
+        controls.ambient_intensity = 0.0;
     }
 
     if (e.key === "2") {
-        controls.current_controller = "quad";
-        verticalCtrl.innerText = "Adjustment Controller: Quadratic attenuation"
+        if(controls.spotlight_switch) {
+            controls.spotlight_intensity = 0.0;
+            controls.spotlight_switch = 0;
+        } else {
+            controls.spotlight_intensity = 1.0;
+            controls.spotlight_switch = 1;
+        }
     }
 
     if (e.key === "3") {
-        controls.current_controller = "ambient";
-        verticalCtrl.innerText = "Adjustment Controller: Ambient light"
+        if(controls.streetlight_switch) {
+            controls.streetlight_intensity = 0.0;
+            controls.streetlight_switch = 0;
+        } else {
+            controls.streetlight_intensity = 1.0;
+            controls.streetlight_switch = 1;
+        }
     }
+
+    if (e.key === "4") {
+        controls.current_rotator = "cow1_y";
+    }
+
+    if (e.key === "5") {
+        controls.current_rotator = "cow1_x";
+    }
+
+    if (e.key === "6") {
+        cow1_anim();
+    }
+
+    if (e.key === "7") {
+        controls.rotation_cow1[2] += 0.3;
+    }
+    if (e.key === "8") {
+
+        controls.rotation_cow1[2] -= 0.3;
+    }
+    if (e.key === "9") {
+        controls.rotation_cow1[0] -= 0.4;
+        controls.rotation_cow1[1] += 0.6;
+    }
+
 
     if (e.key === "q") {
         controls.headlight_x -= 1.0;
@@ -323,7 +367,7 @@ function checkKeyPressed(e) {
         );
         controls.rotation_angle_gold -= 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, backVector, -controls.movement_speed);
-       vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, backVector, -controls.movement_speed);
+        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, backVector, -controls.movement_speed);
     }
 
     if (e.key === "a") {
@@ -334,7 +378,7 @@ function checkKeyPressed(e) {
         );
         controls.rotation_angle_gold += 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, leftVector, -controls.movement_speed);
-       vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, leftVector, -controls.movement_speed);
+        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, leftVector, -controls.movement_speed);
     }
 
     if (e.key === "d") {
@@ -354,11 +398,11 @@ function checkKeyPressed(e) {
                 controls.rotation_angle_gold += 0.1;
                 controls.headlight_direction[0] -= 1;
                 break;
-            case "silver":
-                controls.rotation_angle_silver -= 0.1;
+            case "cow1_y":
+                controls.rotation_cow1[1] -= 0.1;
                 break;
-            case "bronze":
-                controls.rotation_angle_bronze -= 0.1;
+            case "cow1_x":
+                controls.rotation_cow1[0] -= 0.1;
                 break;
             case "pedestal":
                 controls.rotation_angle_pedestal_2itself -= 0.1;
@@ -375,11 +419,11 @@ function checkKeyPressed(e) {
                 controls.rotation_angle_gold -= 0.1;
                 controls.headlight_direction[0] += 1;
                 break;
-            case "silver":
-                controls.rotation_angle_silver += 0.1;
+            case "cow1_y":
+                controls.rotation_cow1[1] += 0.1;
                 break;
-            case "bronze":
-                controls.rotation_angle_bronze += 0.1;
+            case "cow1_x":
+                controls.rotation_cow1[0] += 0.1;
                 break;
             case "pedestal":
                 controls.rotation_angle_pedestal_2itself += 0.1;
@@ -419,6 +463,84 @@ function checkKeyPressed(e) {
     }
 
 
+}
+
+function checkObjectPosition() {
+    const objectX = controls.object_position[0];
+    const objectY = controls.object_position[1];
+    const cowX = controls.position_cow1[0];
+    const cowY = controls.position_cow1[1];
+
+    const distance = Math.sqrt(Math.pow(objectX - cowX, 2) + Math.pow(objectY - cowY, 2));
+
+    if (distance <= 4.5) {
+        cow1_anim();
+    } else {
+        controls.rotation_cow1 = [0.0, -0.7, 0.0];
+    }
+}
+
+function cow1_anim() {
+    switch (controls.current_frame_cow1) {
+        case 0:
+            controls.rotation_cow1[0] = 0.0;
+            controls.rotation_cow1[1] = -0.7;
+            controls.rotation_cow1[2] = 0.0;
+            controls.current_frame_cow1++;
+            break;
+        case 20:
+            controls.rotation_cow1[0] = 0.2;
+            controls.rotation_cow1[1] = -1.0;
+            controls.current_frame_cow1++;
+            break;
+        case 60:
+            controls.rotation_cow1[2] = 0.3;
+            controls.rotation_cow1[1] = -0.8;
+            controls.current_frame_cow1++;
+            break;
+        case 100:
+            controls.rotation_cow1[2] = 0.0;
+            controls.rotation_cow1[1] = -1.0;
+            controls.current_frame_cow1++;
+            break;
+        case 140:
+            controls.rotation_cow1[2] = 0.3;
+            controls.rotation_cow1[1] = -0.8;
+            controls.current_frame_cow1++;
+            break;
+        case 180:
+            controls.rotation_cow1[2] = 0.0;
+            controls.rotation_cow1[1] = -1.0;
+            controls.current_frame_cow1++;
+            break;
+        case 200:
+            controls.rotation_cow1[0] = -0.2;
+            controls.rotation_cow1[1] = -0.4;
+            controls.current_frame_cow1++;
+            break;
+        case 240:
+            controls.rotation_cow1[2] = 0.3;
+            controls.rotation_cow1[1] = -0.2;
+            controls.current_frame_cow1++;
+            break;
+        case 280:
+            controls.rotation_cow1[2] = 0.0;
+            controls.rotation_cow1[1] = -0.4;
+            controls.current_frame_cow1++;
+            break;
+        case 320:
+            controls.rotation_cow1[2] = 0.3;
+            controls.rotation_cow1[1] = -0.2;
+            controls.current_frame_cow1++;
+            break;
+        case 360:
+            controls.rotation_cow1[2] = 0.0;
+            controls.rotation_cow1[1] = -0.4;
+            controls.current_frame_cow1 = 0;
+            break;
+        default:
+            controls.current_frame_cow1++;
+    }
 }
 
 main();

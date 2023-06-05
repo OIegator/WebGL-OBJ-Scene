@@ -14,6 +14,8 @@ uniform vec3 uSpotlightPosition;
 uniform vec3 uSpotlightDirection;
 uniform float uSpotlightCutoff;
 uniform float uSpotlightOuterCutoff;
+uniform float uSpotlightIntensity;
+uniform float uStreetlightIntensity;
 
 uniform vec3 uLightPosition;
 uniform float uAttenuationLinear;
@@ -79,13 +81,13 @@ void main() {
 
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
     (vec3(0.0, 1.0, 0.0) * diffuseLightDot2 +
-    vec3(0.0, 1.0, 0.0)* specularLightParam2) * attenuation * spotlightFactor +
+    vec3(0.0, 1.0, 0.0)* specularLightParam2) * attenuation * spotlightFactor * uSpotlightIntensity +
     (uDiffuseLightColor * diffuseLightDot3 +
-    uSpecularLightColor * specularLightParam3 * 1.0) * attenuation * streetLightFactor +
+    uSpecularLightColor * specularLightParam3 * 1.0) * attenuation * streetLightFactor * uStreetlightIntensity +
     (uDiffuseLightColor * diffuseLightDot4 +
-    uSpecularLightColor * specularLightParam4 * 1.0) * attenuation * streetLightFactor2;
+    uSpecularLightColor * specularLightParam4 * 1.0) * attenuation * streetLightFactor2 * uStreetlightIntensity;
 
 
-    fragColor = (tColor1 + vColor * 0.5) * vec4(vLightWeighting, 1);
+    fragColor = (tColor1) * vec4(vLightWeighting, 1);
 
 }

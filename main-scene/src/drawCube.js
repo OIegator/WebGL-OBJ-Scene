@@ -117,6 +117,16 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
         Math.cos(60*Math.PI / 180)
     );
 
+    gl.uniform1f(
+        programInfo.uniformLocations.spotlightIntensity,
+        controls.spotlight_intensity
+    );
+
+    gl.uniform1f(
+        programInfo.uniformLocations.streetlightIntensity,
+        controls.streetlight_intensity
+    );
+
     gl.uniform3fv(
         programInfo.uniformLocations.ambientLightColor,
         [0.1, 0.1, 0.1]
