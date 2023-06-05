@@ -4,6 +4,8 @@ import {initCubeBuffers, initColorBuffer} from "./initCubeBuffers";
 import {initMeshBuffers} from "./initMeshBuffers";
 import {drawCube} from "./drawCube.js";
 import {drawMesh} from "./drawMesh.js";
+import ufo_texture from "../textures/ufo_diffuse.png"
+import cow_texture from "../textures/cow.png"
 import grass_texture from "../textures/grass.jpg"
 import gold_texture from "../textures/gold_block.png"
 import {vec3} from "gl-matrix";
@@ -19,9 +21,9 @@ let controls = {
     current_rotator: "gold",
     current_controller: "ambient",
     rotation_angle_gold: Math.PI,
-    object_position: vec3.fromValues(0.0, -2.0, -6.0),
+    object_position: [0.0, 0.0, -16.0],
     headlight_direction: [0.0, -1.0, 0.0],
-    movement_speed: 0.1,
+    movement_speed: 0.5,
     object_rotation: 0.0,
     rotation_angle_silver: 0.0,
     rotation_angle_bronze: 0.0,
@@ -29,7 +31,7 @@ let controls = {
     rotation_angle_pedestal_2scene: 0.0,
     attenuation_linear: 0.0,
     attenuation_quadratic: 0.0,
-    ambient_intensity: -3.8,
+    ambient_intensity: 2,
     current_vs: LambertVS,
     current_fs: PhongFS,
     fs_list: [PhongFS],
@@ -37,6 +39,7 @@ let controls = {
     vs_list: [LambertVS],
     vs_ind: 0,
 }
+
 
 function initWebGL(canvas) {
     gl = null
@@ -68,12 +71,14 @@ async function main() {
         gl.depthFunc(gl.LEQUAL);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
-
     const cubeBuffers = initCubeBuffers(gl);
-    const meshBuffers = await initMeshBuffers(gl);
+    const ufoBuffers = await initMeshBuffers(gl, "ufo");
+    const cowBuffers = await initMeshBuffers(gl, "cow");
 
     const grassTexture = loadTexture(gl, grass_texture);
     const goldTexture = loadTexture(gl, gold_texture);
+    const ufoTexture = loadTexture(gl, ufo_texture);
+    const cowTexture = loadTexture(gl, cow_texture);
     // const silverTexture = loadTexture(gl, iron_texture);
     // const bronzeTexture = loadTexture(gl, copper_texture);
     // const digit1Texture = loadTexture(gl, digit1_texture);
@@ -155,7 +160,9 @@ async function main() {
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass6", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass7", controls);
             drawCube(gl, programInfo, cubeBuffers, grassTexture, null, colorBuffer, "grass8", controls);
-            drawMesh(gl, programInfo, meshBuffers, grassTexture, null, colorBuffer, "gold1", controls);
+            drawMesh(gl, programInfo, ufoBuffers, ufoTexture, null, colorBuffer, "gold1", controls);
+            drawMesh(gl, programInfo, cowBuffers, cowTexture, null, colorBuffer, "cow1", controls);
+            drawMesh(gl, programInfo, cowBuffers, cowTexture, null, colorBuffer, "cow2", controls);
         }
         requestAnimationFrame(render);
     }
@@ -299,40 +306,44 @@ function checkKeyPressed(e) {
 
     if (e.key === "w") {
         const frontVector = vec3.fromValues(
-            -Math.sin(controls.rotation_angle_gold),
+            -Math.sin(Math.PI),
             0.0,
-            -Math.cos(controls.rotation_angle_gold)
+            -Math.cos(Math.PI)
         );
+        controls.rotation_angle_gold += 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, frontVector, -controls.movement_speed);
         vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, frontVector, -controls.movement_speed);
     }
 
     if (e.key === "s") {
         const backVector = vec3.fromValues(
-            Math.sin(controls.rotation_angle_gold),
+            Math.sin(Math.PI),
             0.0,
-            Math.cos(controls.rotation_angle_gold)
+            Math.cos(Math.PI)
         );
+        controls.rotation_angle_gold -= 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, backVector, -controls.movement_speed);
        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, backVector, -controls.movement_speed);
     }
 
     if (e.key === "a") {
         const leftVector = vec3.fromValues(
-            -Math.cos(controls.rotation_angle_gold),
+            -Math.cos(Math.PI),
             0.0,
-            Math.sin(controls.rotation_angle_gold)
+            Math.sin(Math.PI)
         );
+        controls.rotation_angle_gold += 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, leftVector, -controls.movement_speed);
        vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, leftVector, -controls.movement_speed);
     }
 
     if (e.key === "d") {
         const rightVector = vec3.fromValues(
-            Math.cos(controls.rotation_angle_gold),
+            Math.cos(Math.PI),
             0.0,
-            -Math.sin(controls.rotation_angle_gold)
+            -Math.sin(Math.PI)
         );
+        controls.rotation_angle_gold -= 0.1;
         vec3.scaleAndAdd(controls.object_position, controls.object_position, rightVector, -controls.movement_speed);
         vec3.scaleAndAdd(controls.headlight_direction, controls.headlight_direction, rightVector, -controls.movement_speed);
     }

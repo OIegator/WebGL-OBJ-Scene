@@ -49,7 +49,7 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
 
     setTextureAttribute(gl, buffers, programInfo);
 
-    //setColorAttribute(gl, colorBuffer, programInfo);
+    setColorAttribute(gl, colorBuffer, programInfo);
 
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
@@ -133,23 +133,23 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
         [1.0, 1.0, 1.0]
     );
 
-    // gl.activeTexture(gl.TEXTURE0);
-    //
-    // // Bind the texture to texture unit 0
-    // gl.bindTexture(gl.TEXTURE_2D, texture1);
-    //
-    // // Tell the shader we bound the texture to texture unit 0
-    // gl.uniform1i(programInfo.uniformLocations.uSampler1, 0);
-    //
-    // if (texture2 != null) {
-    //     gl.activeTexture(gl.TEXTURE1);
-    //
-    //     // Bind the texture to texture unit 1
-    //     gl.bindTexture(gl.TEXTURE_2D, texture2);
-    //
-    //     // Tell the shader we bound the texture to texture unit 1
-    //     gl.uniform1i(programInfo.uniformLocations.uSampler2, 1);
-    // }
+    gl.activeTexture(gl.TEXTURE0);
+
+    // Bind the texture to texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture1);
+
+    // Tell the shader we bound the texture to texture unit 0
+    gl.uniform1i(programInfo.uniformLocations.uSampler1, 0);
+
+    if (texture2 != null) {
+        gl.activeTexture(gl.TEXTURE1);
+
+        // Bind the texture to texture unit 1
+        gl.bindTexture(gl.TEXTURE_2D, texture2);
+
+        // Tell the shader we bound the texture to texture unit 1
+        gl.uniform1i(programInfo.uniformLocations.uSampler2, 1);
+    }
 
     {
         const vertexCount = 36;

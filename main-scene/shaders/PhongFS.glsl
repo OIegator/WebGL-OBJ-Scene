@@ -43,7 +43,7 @@ void main() {
     vec3 halfwayDir = normalize(reflectionVector + V);
 
     vec3 spotlightDirection = normalize(uSpotlightPosition - vPosition);
-    float spotlightDot = dot(spotlightDirection, normalize(-vec3(0.0, -1.0, -1.0)));
+    float spotlightDot = dot(spotlightDirection, normalize(-vec3(0.0, -1.0, 0.0)));
     float spotlightFactor = smoothstep(uSpotlightOuterCutoff, uSpotlightCutoff, spotlightDot);
 
     float diffuseLightDot2 = max(dot(vNormal, spotlightDirection), 0.0);
@@ -78,8 +78,8 @@ void main() {
     uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-    (uDiffuseLightColor * diffuseLightDot2 +
-    uSpecularLightColor * specularLightParam2) * attenuation * spotlightFactor +
+    (vec3(0.0, 1.0, 0.0) * diffuseLightDot2 +
+    vec3(0.0, 1.0, 0.0)* specularLightParam2) * attenuation * spotlightFactor +
     (uDiffuseLightColor * diffuseLightDot3 +
     uSpecularLightColor * specularLightParam3 * 1.0) * attenuation * streetLightFactor +
     (uDiffuseLightColor * diffuseLightDot4 +

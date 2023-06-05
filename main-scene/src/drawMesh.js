@@ -16,27 +16,17 @@ function drawMesh(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
         case "gold1":
             mat4.translate(modelViewMatrix, modelViewMatrix, controls.object_position);
             mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
+           //w mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -10.0, -90.0]);
+            //mat4.rotate(modelViewMatrix, modelViewMatrix, 0.4, [1, 0, 0]);
             mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
             break;
-        case "gold2":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_gold + controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+        case "cow1":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [-10.0, -4.0, -20.0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, -0.7, [0, 1, 0]);
             break;
-        case "silver":
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2scene, [0, 1, 0]);
-            // Translate the cube to the center of rotation
-            mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
-
-            // Rotate the cube around its center
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
-
-            // Translate the cube back to its original position
-            mat4.translate(modelViewMatrix, modelViewMatrix, [-3.0, 0.0, 0.0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_silver, [0, 1, 0]);
+        case "cow2":
+            mat4.translate(modelViewMatrix, modelViewMatrix, [10.0, -4.0, -20.0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, -2.6, [0, 1, 0]);
             break;
         case "bronze":
             mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
